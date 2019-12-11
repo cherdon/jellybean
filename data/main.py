@@ -21,6 +21,19 @@ def generate_wordcloud(text, year=None):
     plt.show()
 
 
+def count_frequency(wordtxt):
+    my_list = wordtxt.split()
+    freq = {}
+    for word in my_list:
+        if word not in freq:
+            freq[word] = 0
+        else:
+            pass
+        freq[word] += 1
+    freq = {k: v for k, v in sorted(freq.items(), key=lambda item: item[1])}
+    return freq
+
+
 if __name__ == "__main__":
     dfs = list()
     model_run(SmithsonianScraper, freq='1111111', existing=dfs)
@@ -37,8 +50,11 @@ if __name__ == "__main__":
     dfs = pd.DataFrame(dfs).sort_values(by="date")
 
     grouped_df = dfs.groupby(dfs['date'].dt.year)['words'].agg(['sum', 'count']).reset_index()
-    print(grouped_df)
 
     for index, row in grouped_df.iterrows():
-        generate_wordcloud(row['sum'], row['date'])
+        row['freq'] = count_frequency(row['sum'])
+    print(grouped_df)
+
+    # for index, row in grouped_df.iterrows():
+    #     generate_wordcloud(row['sum'], row['date'])
 
